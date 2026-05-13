@@ -1,0 +1,86 @@
+function sysCall_init()
+
+    -- wheel joints
+    leftMotor=sim.getObject('./LeftJoint')
+    rightMotor=sim.getObject('./RightJoint')
+
+    -- robot speed settings
+    forwardVel=4
+    turnVel=2
+
+    -- current wheel speeds
+    leftSpeed=0
+    rightSpeed=0
+
+    sim.addLog(sim.verbosity_scriptinfos,
+    'Keyboard Control:\nW = Forward\nS = Backward\nA = Left\nD = Right\nX = Stop')
+
+end
+
+
+function sysCall_sensing()
+
+    local message,auxData=sim.getSimulatorMessage()
+
+    while message~=-1 do
+
+        -- key pressed
+        if message==sim.message_keypress then
+
+            local key=auxData[1]
+
+            -------------------------------------------------
+            -- W -> Forward
+            -------------------------------------------------
+            if key==string.byte('w') or key==string.byte('W') then
+
+                leftSpeed=forwardVel
+                rightSpeed=forwardVel
+
+            -------------------------------------------------
+            -- S -> Backward
+            -------------------------------------------------
+            elseif key==string.byte('s') or key==string.byte('S') then
+
+                leftSpeed=-forwardVel
+                rightSpeed=-forwardVel
+
+            -------------------------------------------------
+            -- A -> Turn Left
+            -------------------------------------------------
+            elseif key==string.byte('a') or key==string.byte('A') then
+
+                leftSpeed=-turnVel
+                rightSpeed=turnVel
+
+            -------------------------------------------------
+            -- D -> Turn Right
+            -------------------------------------------------
+            elseif key==string.byte('d') or key==string.byte('D') then
+
+                leftSpeed=turnVel
+                rightSpeed=-turnVel
+
+            -------------------------------------------------
+            -- X -> Stop
+            -------------------------------------------------
+            elseif key==string.byte('x') or key==string.byte('X') then
+
+                leftSpeed=0
+                rightSpeed=0
+
+            end
+        end
+
+        message,auxData=sim.getSimulatorMessage()
+    end
+end
+
+
+function sysCall_actuation()
+
+    -- apply wheel velocities
+    sim.setJointTargetVelocity(leftMotor,leftSpeed)
+    sim.setJointTargetVelocity(rightMotor,rightSpeed)
+
+end
