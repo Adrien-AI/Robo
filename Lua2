@@ -1,0 +1,47 @@
+function sysCall_init()
+    L=sim.getObject('./LeftJoint')
+    R=sim.getObject('./RightJoint')
+    v=4
+    t=2
+    ls=0
+    rs=0
+end
+
+function sysCall_sensing()
+    m,a=sim.getSimulatorMessage()
+
+    while m~=-1 do
+
+        if m==sim.message_keypress then
+            k=a[1]
+
+            if k==119 or k==87 then
+                ls=v
+                rs=v
+
+            elseif k==115 or k==83 then
+                ls=-v
+                rs=-v
+
+            elseif k==97 or k==65 then
+                ls=-t
+                rs=t
+
+            elseif k==100 or k==68 then
+                ls=t
+                rs=-t
+
+            elseif k==120 or k==88 then
+                ls=0
+                rs=0
+            end
+        end
+
+        m,a=sim.getSimulatorMessage()
+    end
+end
+
+function sysCall_actuation()
+    sim.setJointTargetVelocity(L,ls)
+    sim.setJointTargetVelocity(R,rs)
+end
